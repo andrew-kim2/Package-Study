@@ -1,0 +1,283 @@
+\documentclass[10pt]{beamer}
+\usepackage{kotex} % 한글을 사용하기 위함
+\usepackage{setspace} % 줄 간격(line space) 설정을 위함
+\usepackage{pgf} % 프로그램 코드 등을 삽입하기 위함
+
+%기존에 만들어져 있는 테마들이 존재함. 그 중 하나를 사용하였음.
+%각 요소들을 하나씩 세팅함으로써, 나만의 템플릿을 만들수 있을 것으로 보임.
+\usetheme{CambridgeUS}
+
+
+%-------------------------------------------------------------------------------%
+%  설정 Part 
+%-------------------------------------------------------------------------------
+
+%%%% Sweave 설정 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% chunk option : message와 warning이 출력되지 않도록 처리 
+\Sexpr{opts_chunk$set(message=FALSE, warning=FALSE)}
+
+
+% 제목 페이지에 들어갈 내용
+\title{'psych' packages}
+\subtitle{}
+\institute{DataScience Team}
+\author{Andrew.kim}
+\date{2014.04.30}
+\titlegraphic{\includegraphics[width=2cm]{ktNexR.png}}
+
+
+% frame title이 들어가는 곳에 로고(Logo) 박기
+\setbeamertemplate{frametitle}
+{
+  \nointerlineskip
+  \begin{beamercolorbox}[sep=0.3cm,ht=2.2em,wd=\paperwidth]{frametitle}
+    \vbox{}\vskip-2ex%
+    \strut\insertframetitle\strut
+    \hfill
+    \raisebox{-1.3mm}{\includegraphics[width=1.5cm]{ktNexR.png}}
+  \end{beamercolorbox}
+}
+
+%%%%% 글머리 관련 설정 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 색 변경 
+\setbeamercolor{item}{fg=red}
+\setbeamercolor{itemize subitem}{fg=black}
+
+% 기호 변경 
+\setbeamertemplate{itemize subitem}[triangle]
+
+% 폰트 사이즈 변경
+\setbeamerfont{itemize/enumerate body}{size=\small}
+\setbeamerfont{itemize/enumerate subbody}{size=\scriptsize}
+\setbeamerfont{itemize/enumerate subsubbody}{size=\scriptsize}
+
+
+%-------------------------------------------------------------------------------%
+%  내용 작성 Part 
+%-------------------------------------------------------------------------------%
+
+\begin{document}
+\maketitle
+
+
+% page 1
+\begin{frame}
+  \frametitle{'psych' package}
+    \begin{spacing}{1.2}
+    \begin{itemize}
+      \item {Northwestern University (2005 ~ 현재)}
+      \item {심리학 연구에 유용한 함수들을 포함하고 있음}
+        \begin{itemize}
+          \item {Data entry function}
+          \item {Data descriptive analysis}
+        \end{itemize}
+      \item {심리학 연구에 주로 사용하는 분석방법}
+        \begin{itemize}
+          \item {Factor analysis}
+          \item {Clustering analysis}
+          \item {Principal components analysis}
+        \end{itemize}      
+    \end{itemize}
+    \end{spacing}
+\end{frame}
+
+% page 2
+\begin{frame}[fragile]
+  \frametitle{Data Description}
+  \begin{itemize}
+    \item {Describe(): 기초통계량을 구해주는 함수}
+      \begin{itemize}
+        \item {n, mean, sd, median, trimmed, mad, min, max, range, skew, kurtosis, se}        
+      \end{itemize}
+  \end{itemize}
+      \setlength\topsep{-2pt}
+  \begin{tiny}
+  <<fig.height=2, fig.width=2, tidy=FALSE>>=
+    library(psych)
+
+    data(sat.act)
+    head(sat.act, 10)
+    describe(sat.act)
+  @
+  \end{tiny}
+\end{frame}
+
+% page 3
+\begin{frame}[fragile]
+  \frametitle{EDA - Elementary Statistic}
+  \begin{itemize}
+    \item {DescribeBy(): 각 그룹 별 기초통계량을 구해주는 함수}      
+  \end{itemize}
+      \setlength\topsep{-2pt}
+  \begin{tiny}
+  <<fig.height=2, fig.width=2, tidy=F>>=
+    describeBy(sat.act, group=sat.act$gender)    
+  @
+  \end{tiny}
+\end{frame}
+
+% page 4
+\begin{frame}[fragile]
+  \frametitle{EDA - Elementary Statistic}
+  \begin{tiny}
+  <<fig.height=2, fig.width=2, tidy=F>>=
+    describeBy(sat.act, group=list(sat.act$gender, sat.act$education))    
+  @
+  \end{tiny}
+\end{frame}
+
+% page 5
+\begin{frame}[fragile]
+  \frametitle{EDA - Elementary Statistic}
+  \begin{tiny}
+  <<fig.height=2, fig.width=2, tidy=F>>=
+    head(describeBy(sat.act, group=list(sat.act$gender, sat.act$education), mat=TRUE), 14)    
+  @
+  \end{tiny}
+\end{frame}
+
+% page 6
+\begin{frame}[fragile]
+  \frametitle{EDA - Plot}
+      \begin{itemize}
+        \item {Pairs.panels(): 산점도, 히스토그램, 상관계수를 한 그림에 표현해 주는 함수}
+          \begin{itemize}
+            \item {장점: 한눈에 다양한 지표들을 표현해 줌}
+            \item {단점: 관측치의 수가 증가할 수록 느려짐}
+          \end{itemize}        
+    \end{itemize}
+        \setlength\topsep{-1pt}
+  \begin{tiny}
+  \begin{columns}
+    \column[t]{5cm}
+      <<tidy=FALSE>>=
+      pairs.panels(sat.act)
+      @   
+    \column[t]{5cm}
+      <<tidy=FALSE>>=
+      pairs.panels(
+        affect[14:17], 
+        bg=c("red","black","white","blue")[affect$Film], 
+        pch=21)
+      @    
+  \end{columns}
+  \end{tiny}  
+\end{frame}
+
+
+% page 7
+\begin{frame}[fragile]
+  \frametitle{EDA - Correlation}
+  \begin{itemize}
+    \item {Bi.bar(): 비교 막대 그래프 작성}    
+  \end{itemize}
+      \setlength\topsep{-2pt}
+  \begin{tiny}
+  \begin{columns}
+    \column[t]{5cm}
+      <<tidy=FALSE>>=
+      data(bfi)
+      with(bfi, {bi.bars(age, gender, ylab="Age")})   
+      @   
+    \column[t]{5cm}
+      <<tidy=FALSE>>=
+      
+      @    
+  \end{columns}
+  \end{tiny}
+\end{frame}
+
+
+% page 8
+\begin{frame}[fragile]
+  \frametitle{EDA - Correlation}
+  \begin{itemize}
+    \item {lowerCor(): 하삼각행렬 부분에 상관계수를 표현하는 함수}
+    \item {lowerUpper(): 크기가 같은 2개의 상관계수 행렬을 합치는 함수}
+  \end{itemize}
+      \setlength\topsep{-2pt}
+  \begin{tiny}
+  \begin{columns}
+    \column[t]{5cm}
+      <<tidy=FALSE>>=
+      lowerCor(sat.act)     
+      @   
+    \column[t]{5cm}
+      <<tidy=FALSE>>=
+      female <- subset(sat.act, sat.act$gender==2)
+      male <- subset(sat.act, sat.act$gender==1)
+      lower <- lowerCor(male[-1])
+      upper <- lowerCor(female[-1])
+      both <- lowerUpper(lower, upper) 
+      round(both, 2)
+      @    
+  \end{columns}
+  \end{tiny}
+\end{frame}
+
+
+% page 9
+\begin{frame}[fragile]
+  \frametitle{EDA - Correlation Plot}
+  \begin{itemize}
+    \item {cor.plot(): 상관계수를 plotting 하는 함수}
+    \item {lowerUpper(): 크기가 같은 2개의 상관계수 행렬을 합치는 함수}
+  \end{itemize}
+      \setlength\topsep{-2pt}
+  \begin{tiny}
+  \begin{columns}
+    \column[t]{5cm}
+      <<tidy=FALSE>>=
+      cor.plot(Thurstone, numbers=TRUE, 
+               main="9 cognitive variables from Thurstone")     
+      @   
+    \column[t]{5cm}
+      <<tidy=FALSE>>=
+      circ <- sim.circ(24)
+      r.circ <- cor(circ)
+      cor.plot(r.circ, main='24 variables in a circumplex')
+      @    
+  \end{columns}
+  \end{tiny}
+\end{frame}
+
+% page 10
+\begin{frame}[fragile]
+  \frametitle{EDA - Correlation Plot(Spider plot)}
+  \begin{itemize}
+    \item {Spider(): 한 개의 변수와 나머지 변수의 상관관계를 알기 쉽도록 레이더차트 형태로 표현한 그림을 그려주는 함수}
+      \begin{itemize}
+        \item {행을 기준으로 차트를 그림}
+      \end{itemize}
+  \end{itemize}
+      \setlength\topsep{-2pt}
+  \begin{tiny}
+  <<fig.height=2, fig.width=2, tidy=F>>=
+    (cor_ex <- as.data.frame(round(r.circ[c(1,13), ],2), 
+                            row.names=c("V1", "V2")))    
+  @
+  \end{tiny}
+      \setlength\topsep{-2pt}
+  \begin{tiny}
+  \begin{columns}
+    \column[t]{5cm}
+      <<tidy=FALSE>>=
+      spider(y=1, x=1:24, data=r.circ, fill=TRUE)     
+      @   
+    \column[t]{5cm}
+      <<tidy=FALSE>>=
+      spider(y=13, x=1:24, data=r.circ, fill=TRUE)
+      @    
+  \end{columns}
+  \end{tiny}
+\end{frame}
+
+% final page
+\begin{frame}[plain]
+  \begin{center}
+    \includegraphics[width=4cm]{ktNexR.png}
+  \end{center}
+\end{frame}
+
+
+\end{document}
